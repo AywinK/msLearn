@@ -10,10 +10,10 @@
 // transferrable in a structural type system:
 
 interface Ball {
-  diameter: number;
+    diameter: number;
 }
 interface Sphere {
-  diameter: number;
+    diameter: number;
 }
 
 let ball: Ball = { diameter: 10 };
@@ -27,8 +27,8 @@ ball = sphere;
 // set to be a ball or sphere.
 
 interface Tube {
-  diameter: number;
-  length: number;
+    diameter: number;
+    length: number;
 }
 
 let tube: Tube = { diameter: 12, length: 3 };
@@ -49,7 +49,7 @@ ball = tube;
 
 let createBall = (diameter: number) => ({ diameter });
 let createSphere = (diameter: number, useInches: boolean) => {
-  return { diameter: useInches ? diameter * 0.39 : diameter };
+    return { diameter: useInches ? diameter * 0.39 : diameter };
 };
 
 createSphere = createBall;
@@ -68,7 +68,7 @@ createBall = createSphere;
 // include every option to make the functions match up:
 
 [createBall(1), createBall(2)].forEach((ball, _index, _balls) => {
-  console.log(ball);
+    console.log(ball);
 });
 
 // No one needs that.
@@ -84,16 +84,16 @@ createRedBall = createBall;
 // Where the first assignment works (they both have diameter)
 // but the second doesn't (the ball doesn't have a color).
 
-function displayAlert(message:string|number) : void {
+function displayAlert(message: string | number): void {
     alert('The message is ' + message);
 }
 
 displayAlert(32)
 
-function sum(input:number[]) {
-    let total =  0;
-    for(let count = 0; count < input.length; count++) {
-        if(isNaN(input[count])){
+function sum(input: number[]) {
+    let total = 0;
+    for (let count = 0; count < input.length; count++) {
+        if (isNaN(input[count])) {
             continue;
         }
         total += Number(input[count]);
@@ -101,7 +101,7 @@ function sum(input:number[]) {
     return total;
 }
 
-sum([1,"two",3]);
+sum([1, "two", 3]);
 
 let addThreeNumbers = (x: number, y: number, z?: number) => {
     if (z) return x + y + z
@@ -112,8 +112,8 @@ addThreeNumbers(10, 20, 30)
 
 let subtractThreeNumbers = (x: number, y: number, z = 100) => x - y - z;
 
-console.log(subtractThreeNumbers(10,20))
-console.log(subtractThreeNumbers(10,20,15))
+console.log(subtractThreeNumbers(10, 20))
+console.log(subtractThreeNumbers(10, 20, 15))
 
 type calculator = (x: number, y: number) => number
 
@@ -238,7 +238,7 @@ console.log(spark.brake());
 
 type ValidTypes = string | number;
 
-function identity<T extends ValidTypes, U>(value: T, message: U){
+function identity<T extends ValidTypes, U>(value: T, message: U) {
     let result: ValidTypes = "";
     let typeValue: string = typeof value;
     if (typeof value === "number") {
@@ -263,3 +263,54 @@ let pets2 = { 1: "cats", 2: "dogs", 3: "parrots", 4: "fish" };
 
 console.log(getPets(pets1, "fish"));
 console.log(getPets(pets2, "3"));
+
+interface Identity<T, U> {
+    value: T;
+    message: U;
+}
+
+let returnNumber: Identity<number, string> = {
+    value: 25,
+    message: "hello!"
+}
+let returnString: Identity<string, number> = {
+    value: "hello!",
+    message: 25
+}
+
+interface ProcessIdentity<T, U> {
+    (value: T, message: U): T;
+}
+
+function processIdentity<T, U>(value: T, message: U): T {
+    console.log(message);
+    return value
+}
+
+let processor: ProcessIdentity<number, string> = processIdentity;
+let returnNumber1 = processor(100, "hello");
+let returnString1 = processor("hello", 100);
+
+interface ProcessIdentity<T, U> {
+    value: T;
+    message: U;
+    process(): T;
+}
+
+class ProcessIdentityClass<X, Y> implements ProcessIdentity<X, Y> {
+    value: X;
+    message: Y;
+    constructor(val: X, msg: Y) {
+        this.value = val;
+        this.message = msg;
+    }
+    process(): X {
+        console.log(this.message);
+        return this.value
+    }
+}
+
+let processor = new ProcessIdentityClass<number, string>(100, "hello");
+processor.process();
+processor.value = "100";
+
